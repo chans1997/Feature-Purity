@@ -90,7 +90,7 @@ def show_cam_on_image_single_map(img, mask,i):
     cam = cam / np.max(cam)
     cv2.imwrite("resnet50/test/both+{}.jpg".format(i), np.uint8(255 * cam))
 
-
+#grad-cam
 class GradCAM(object):
     """
     1: 网络不更新梯度,输入需要梯度更新
@@ -164,7 +164,7 @@ class GradCAM(object):
         cam_total = cv2.resize(cam_total,(224, 224))
         return cam,cam_total
 
-
+# grad-cam++
 class GradCamPlusPlus(GradCAM):
     def __init__(self, net, layer_name):
         super(GradCamPlusPlus, self).__init__(net, layer_name)
@@ -312,15 +312,17 @@ if __name__ == '__main__':
     Makes the visualization. """
 
     # args = get_args()
+    # 图片路径
     image_path = './examples/both.png'
     # Can work with any model, but it assumes that the model has a
     # feature method, and a classifier method,
     # as in the VGG models in torchvision.
+    # 加载模型及权重
     model = models.resnet50(pretrained=True)
     # model = ResNet(ResidualBlock, [2, 2, 2, 2])
     # model.load_state_dict(torch.load('resnet.ckpt'))
     grad_cam = GradCAM(net=model, layer_name='layer4.2.conv3')
-
+    # 读取图片并resize
     img = cv2.imread(image_path, 1)
     img = np.float32(cv2.resize(img, (224, 224))) / 255
     # img = np.float32(np.random.randint(0, 255, size=[224, 224, 3]))
@@ -330,6 +332,7 @@ if __name__ == '__main__':
     # If None, returns the map for the highest scoring category.
     # Otherwise, targets the requested index.
     target_index = 243
+    # 获取单张特征层（mask）及全部特征层
     mask,mask_total = grad_cam(input, target_index)
     for i in range(mask.shape[0]):
         single_mask = mask[i, :, :]
